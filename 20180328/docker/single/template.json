@@ -1,0 +1,33 @@
+{
+    "variables": {
+    },
+    "builders": [
+        {
+            "commit": true,
+            "image": "ubuntu:xenial",
+            "pull": true,
+            "type": "docker",
+            "name": "xenial",
+            "run_command": [
+                "-d",
+                "--hostname","xenial",
+                "-t","{{.Image}}",
+                "/bin/bash","-l"
+            ]
+        }
+    ],
+    "post-processors": [
+        {
+            "repository": "xenial",
+            "tag": "latest",
+            "type": "docker-tag"
+        }
+    ],
+    "provisioners": [
+        {
+            "execute_command": "{{.Vars}} '{{.Path}}'",
+            "script": "xenial-all.sh",
+            "type": "shell"
+        }
+    ]
+}

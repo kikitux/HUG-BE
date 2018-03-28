@@ -1,0 +1,62 @@
+{
+    "variables": {
+    },
+    "builders": [
+        {
+            "commit": true,
+            "image": "ubuntu:xenial",
+            "pull": true,
+            "type": "docker",
+            "name": "xenial-vim",
+            "run_command": [
+                "-d",
+                "--hostname","xenial-vim",
+                "-t","{{.Image}}",
+                "/bin/bash","-l"
+            ]
+        },
+        {
+            "commit": true,
+            "image": "ubuntu:xenial",
+            "pull": true,
+            "type": "docker",
+            "name": "xenial-git",
+            "run_command": [
+                "-d",
+                "--hostname","xenial-git",
+                "-t","{{.Image}}",
+                "/bin/bash","-l"
+            ]
+        }
+    ],
+    "post-processors": [
+        {
+            "only": [ "xenial-vim" ],
+            "repository": "xenial-vim",
+            "tag": "latest",
+            "type": "docker-tag"
+        },
+        {
+            "only": [ "xenial-git" ],
+            "repository": "xenial-git",
+            "tag": "latest",
+            "type": "docker-tag"
+        }
+    ],
+    "provisioners": [
+        {
+            "script": "xenial-all.sh",
+            "type": "shell"
+        },
+        {
+            "only": [ "xenial-vim" ],
+            "script": "xenial-vim.sh",
+            "type": "shell"
+        },
+        {
+            "only": [ "xenial-git" ],
+            "script": "xenial-git.sh",
+            "type": "shell"
+        }
+    ]
+}

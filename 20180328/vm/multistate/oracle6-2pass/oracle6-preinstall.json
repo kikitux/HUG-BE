@@ -1,0 +1,48 @@
+{
+    "variables": {
+        "ssh_name": "root",
+        "ssh_pass": "root",
+        "hostname": "oracle6",
+	"output": "oracle6-preinstall",
+        "rootfs"  : "ext4",
+        "swapsize": "6000",
+        "yum": "",
+	"compression" : 6
+    },
+
+    "builders": [{
+        "type": "virtualbox-ovf",
+        "name": "virtualbox",
+        "source_path": "output-oracle6-ovf-virtualbox/oracle6.ovf",
+        "output_directory": "output-{{user `output`}}",
+        "vm_name": "{{user `hostname`}}",
+	"headless" : 0,
+        "ssh_username": "{{user `ssh_name`}}",
+        "ssh_password": "{{user `ssh_pass`}}",
+        "ssh_wait_timeout": "40m",
+        "shutdown_command": "shutdown -h now",
+        "shutdown_timeout": "40m"
+    }],
+
+  "provisioners"             : [{
+    "type": "shell",
+    "execute_command": "sh '{{ .Path }}'",
+    "inline": [
+      "yum clean all",
+      "yum update -y",
+      "yum install -y oracle*preinstall",
+      "yum clean all",
+      "rm /etc/udev/rules.d/70-persistent-net.rules"
+       ]
+  }],
+
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "only": ["virtualbox"],
+      "output": "virtualbox/{{user `output`}}.box",
+      "compression_level": "{{user `compression`}}"
+    }
+  ]
+}
+
